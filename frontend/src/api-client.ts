@@ -40,7 +40,7 @@ export const signIn = async (formData: SignInFormData) => {
     if (!response.ok) {
       throw new Error(body.message || "Sign in failed");
     }
-    return body; // ✅ Return user data if needed
+    return body;
   } catch (error) {
     console.error("Sign-in error:", error);
     throw new Error("Network error during sign-in");
@@ -84,4 +84,16 @@ export const signOut = async () => {
     console.error("Sign-out error:", error);
     throw new Error("Network error during sign-out");
   }
+};
+
+export const addMyHotel = async (hotelFormData: FormData) => {
+  const response = await fetch(`${API_BASE_URL}/api/my-hotels`, {
+    method: "POST",
+    credentials: "include",
+    body: hotelFormData,
+  });
+  if (!response.ok) {
+    throw new Error("Failed to add hotel");
+  }
+  return response.json();
 };
