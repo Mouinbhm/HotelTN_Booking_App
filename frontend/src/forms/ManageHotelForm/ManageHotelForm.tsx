@@ -15,16 +15,17 @@ export type HotelFormData = {
   starRating: number;
   facilities: string[];
   imageFiles: FileList;
+  imageUrls?: string[]; // Added this property
   adultCount: number;
   childCount: number;
 };
 
-type props = {
+type Props = {
   onSave: (hotelFormData: FormData) => void;
   isLoading: boolean;
 };
 
-const ManageHotelForm = ({ onSave, isLoading }: props) => {
+const ManageHotelForm = ({ onSave, isLoading }: Props) => {
   const formMethods = useForm<HotelFormData>();
   const { handleSubmit } = formMethods;
 
@@ -40,15 +41,23 @@ const ManageHotelForm = ({ onSave, isLoading }: props) => {
     formData.append("adultCount", formDataJson.adultCount.toString());
     formData.append("childCount", formDataJson.childCount.toString());
 
-    formDataJson.facilities.forEach((facility) => {
-      formData.append("facilities[${index}]", facility);
+    formDataJson.facilities.forEach((facility, index) => {
+      formData.append(`facilities[${index}]`, facility);
     });
 
+    if (formDataJson.imageUrls) {
+      formDataJson.imageUrls.forEach((url, index) => {
+        formData.append(`imageUrls[${index}]`, url);
+      });
+    }
+
     Array.from(formDataJson.imageFiles).forEach((imageFile) => {
-      formData.append("imageFiles", imageFile);
+      formData.append(`imageFiles`, imageFile);
     });
+
     onSave(formData);
   });
+
   return (
     <FormProvider {...formMethods}>
       <form className="flex flex-col gap-10" onSubmit={onSubmit}>
@@ -61,7 +70,7 @@ const ManageHotelForm = ({ onSave, isLoading }: props) => {
           <button
             disabled={isLoading}
             type="submit"
-            className="bg-blue-600 text-white p-2  font-bold hover:bg-blue-500 text-x rounded disabled:bg-gray-500"
+            className="bg-blue-600 text-white p-2 font-bold hover:bg-blue-500 text-x rounded disabled:bg-gray-500"
           >
             {isLoading ? "Saving..." : "Save"}
           </button>
